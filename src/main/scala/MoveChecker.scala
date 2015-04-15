@@ -1,44 +1,51 @@
 import Piece.Piece
+import Piece._
 
-/**
- * Created by thaodang on 5/4/15.
- */
 abstract class MoveChecker {
   def isValid: Boolean
 }
 
-case class FirstMoveChecker(piece: Piece, position: (Int, Int), board: Board) extends MoveChecker {
+case class TurnChecker(piece: Piece, position: (Int, Int), board: Board) extends MoveChecker {
   override def isValid: Boolean = {
-    if (!board.isEmpty) return true
     piece match {
-      case Piece.Black => true
+      case piece if(piece == board.turn) => true
       case _ => false
     }
   }
 }
 
-case class SelfCaptureChecker(piece: Piece, position: (Int, Int), board: Board) extends MoveChecker {
+case class OccupiedPointChecker(piece: Piece, position: (Int, Int), board: Board) extends MoveChecker {
+  override def isValid: Boolean = {
+    board.pieceAt(position) match {
+      case None => true
+      case _ => false
+    }
+  }
+}
 
-  private def isCaptured(current: (Int, Int), visitedList: List[(Int, Int)]): Boolean = {
+case class SelfCaptureChecker(piece: Piece, positionToPut: (Int, Int), board: Board) extends MoveChecker {
+  override def isValid: Boolean = !isCaptured(piece, positionToPut, List(positionToPut)) || isCapturingOpponent(positionToPut, List(positionToPut))
 
-    def isSurrounded(i: Int, j: Int, visitedList: List[(Int, Int)]): Boolean = {
-      if (board.isOffEdge(i, j)) return true
-      if (visitedList.contains(current)) return true
-
-      board.pieceAt(i, j) match {
-        case null => false
-        case p if p != piece => true
-        case _ => isCaptured((i, j), visitedList.::((i, j)))
+  def isCaptured(currentPiece: Piece, currentPosition: (Int, Int), visited: List[(Int, Int)]) : Boolean = {
+    def isSurrounded(position: (Int, Int)): Boolean = {
+      if(visited.contains(position)) return true
+      board.pieceAt(position) match {
+        case None => false
+        case Some(p) if p != currentPiece => true
+        case _ => isCaptured(currentPiece, position, visited.::(position))
       }
     }
-
-    isSurrounded(current._1 - 1, current._2, visitedList.::(current)) &&
-      isSurrounded(current._1 + 1, current._2, visitedList.::(current)) &&
-      isSurrounded(current._1, current._2 - 1, visitedList.::(current)) &&
-      isSurrounded(current._1, current._2 + 1, visitedList.::(current))
+    surroundingPositions(currentPosition).forall(position => isSurrounded(position))
   }
 
-  override def isValid: Boolean = {
-    !isCaptured(position, List())
+  def isCapturingOpponent(position: (Int, Int), visited: List[(Int, Int)]): Boolean = {
+    surroundingPositions(position).exists(currentPosition => isCaptured(piece.opponent, currentPosition, visited))
+  }
+
+  private def surroundingPositions(current: (Int, Int)): List[(Int, Int)] = {
+    List((current._1 - 1, current._2),
+      (current._1 + 1, current._2),
+      (current._1, current._2 - 1),
+      (current._1, current._2 + 1)).filter(position => !board.isOffEdge(position))
   }
 }
