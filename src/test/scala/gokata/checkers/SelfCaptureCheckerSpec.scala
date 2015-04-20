@@ -1,5 +1,8 @@
-import Piece._
-import org.scalatest.{Matchers, FunSpec}
+package gokata.checkers
+
+import gokata.model.Piece._
+import gokata.model.{Board, Piece, Turn}
+import org.scalatest.{FunSpec, Matchers}
 
 class SelfCaptureCheckerSpec extends FunSpec with Matchers {
   describe("not a self capture") {

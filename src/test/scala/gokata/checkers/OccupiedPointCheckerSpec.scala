@@ -1,4 +1,7 @@
-import Piece._
+package gokata.checkers
+
+import gokata.model.Piece._
+import gokata.model.{Board, Piece, Turn}
 import org.scalatest.{FunSpec, Matchers}
 
 class OccupiedPointCheckerSpec extends FunSpec with Matchers {

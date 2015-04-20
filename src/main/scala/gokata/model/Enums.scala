@@ -1,3 +1,6 @@
+package gokata.model
+
+import gokata.model.Piece.Piece
 
 object Piece extends Enumeration {
   type Piece = Value
@@ -13,8 +16,8 @@ object Piece extends Enumeration {
   implicit def value2PieceValue(piece: Value) = new PieceValue(piece)
 }
 
-object Turn extends Enumeration {
-  type Turn = Value
-  val Black = Value("x")
-  val White = Value("o")
+object Turn {
+  type Turn = Piece
+  val Black = Piece.Black
+  val White = Piece.White
 }
