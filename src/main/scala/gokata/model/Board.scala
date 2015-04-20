@@ -1,10 +1,7 @@
 package gokata.model
 
-import gokata.checkers.{BoardHistoryChecker, SelfCaptureChecker, OccupiedPointChecker, TurnChecker}
-import gokata.model.Piece.Piece
+import gokata.model.Piece._
 import gokata.model.Turn.Turn
-
-import scala.collection.immutable.Queue
 
 class Board(val positions: Array[Array[Piece]], val turn: Turn) {
   
@@ -23,5 +20,10 @@ class Board(val positions: Array[Array[Piece]], val turn: Turn) {
     that.isInstanceOf[Board] && toString() == that.asInstanceOf[Board].toString() && turn == that.asInstanceOf[Board].turn
   }
   override def hashCode() = toString.hashCode + turn.hashCode()
+}
 
+object Board {
+  private def makePieceArray(s: String): Array[Piece] = s.split("\\s").map(string => if(string == "o") Piece.White else if(string == "x") Piece.Black else null)
+
+  def fromArray(arr: Array[String], turn: Turn) = new Board(arr.map(makePieceArray(_)), turn)
 }

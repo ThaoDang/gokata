@@ -7,6 +7,7 @@ import gokata.model.Piece._
  * Created by thaodang on 16/4/15.
  */
 case class SelfCaptureChecker(piece: Piece, positionToPut: (Int, Int), board: Board) extends MoveChecker {
+
   override def isValid: Boolean = !isCaptured(piece, positionToPut, List(positionToPut))._1 || isCapturingOpponent(positionToPut, List(positionToPut))
 
   def isCaptured(currentPiece: Piece, currentPosition: (Int, Int), visited: List[(Int, Int)]): (Boolean, List[(Int, Int)]) = {
